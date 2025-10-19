@@ -3,23 +3,31 @@ name: Deploy HTML to GitHub Pages
 on:
   push:
     branches:
-      - main  # deploy whenever code is pushed to main branch
+      - main  # Trigger deployment on push to the main branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the repo
+      # Step 1: Checkout the repository
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # 2. Upload HTML file(s) as artifact for GitHub Pages
-      - name: Upload HTML
-        uses: actions/upload-pages-artifact@v1
+      # Step 2: Upload HTML file(s) as artifact
+      - name: Upload HTML Artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: .  # path to your HTML file(s), "." means the root of repo
+          path: .  # Upload all files in the root directory
 
-      # 3. Deploy to GitHub Pages
+      # Step 3: Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
+        id: deployment
+        permissions:
+          pages: write  # Grant permission to deploy to Pages
+          id-token: write  # Grant permission to verify deployment origin
+        environment:
+          name: github-pages
+          url: ${{ steps.deployment.outputs.page_url }}
+
